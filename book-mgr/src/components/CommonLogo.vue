@@ -1,8 +1,6 @@
 <script setup lang="ts">
 // import {defineComponent} from 'vue'
 
-
-import theme from "@/stores/theme";
 import useThemeStore from "@/stores/theme";
 const themeStore = useThemeStore()
 </script>
@@ -17,7 +15,7 @@ export default {
 <div class="root" @click="backDashBoard" :style="{backgroundColor: themeStore.bambooGreen.topLogoBgColor}">
   <div class="txt-root">
     <button class="btn">
-      <p class="txt" :style="{color: themeStore.bambooGreen.topLogoTextColor}">Books Mgr</p>
+      <p class="txt" :style="{color: themeStore.bambooGreen.topLogoTextColor}">Books</p>
     </button>
   </div>
 </div>

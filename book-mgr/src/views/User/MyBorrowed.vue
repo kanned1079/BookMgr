@@ -37,6 +37,8 @@ let dataCountOptions = [
 
 interface BorrowHistory {
   id: number  // 数据库id
+  user_id: number
+  book_id: number
   borrow_id: string // 生成的借书订单号
   created_at: string  // 借书日期
   is_back: boolean  // 是否归还
@@ -63,6 +65,22 @@ let getAllMyHistory = async () => {
       data.histories.forEach((i: BorrowHistory) => history.value.push(i))
       pageCount.value = data.page_count
       animated.value = true
+    }
+  } catch (err: any) {
+    message.error(err + '')
+  }
+}
+
+let returnBookById = async (row: BorrowHistory) => {
+  try {
+    animated.value = false
+    let {data} = await instance.patch('/api/user/v1/history', {
+      borrow_id: row.borrow_id,
+      user_id: row.user_id || userStore.thisUser.id,
+      book_id: row.book_id,
+    })
+    if (data.code === 200) {
+      await getAllMyHistory()
     }
   } catch (err: any) {
     message.error(err + '')
@@ -129,15 +147,16 @@ const columns = [
   {
     title: '操作',
     key: 'actions',
-    render(row: Book) {
+    render(row: BorrowHistory) {
       return h('div', {style: {display: 'flex', flexDirection: 'row'}}, [
         h(NButton, {
           size: 'small',
           type: 'primary',
           bordered: false,
-          style: {marginLeft: '10px'},
-          onClick: () => editClicked(row),
-        }, {default: () => '还书'}),
+          disabled: row.is_back,
+          style: {marginLeft: '0px', width: '60px'},
+          onClick: () => returnBookById(row),
+        }, {default: () => row.is_back?'已还':'还书'}),
         // h(NButton, {
         //   size: 'small',
         //   type: 'error',

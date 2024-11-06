@@ -20,14 +20,16 @@ export const useUserStore = defineStore('user', () => {
     let authed = ref<boolean>(false)
 
     let thisUser = ref<User>({
-        id: 1,
+        id: -1,
         role: 'user',
-        email: 'kanned1079@gmail.com',
-        created_at: '2009-10-12'
+        email: '',
+        created_at: '0000-00-00 00:00:00'
     })
 
     return {
         authed,
         thisUser,
     }
+}, {
+    persist: true,
 })

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import {useRouter} from "vue-router";
 import useThemeStore from "@/stores/theme";
 import {useUserStore} from "@/stores/userinfo";
 import renderIcon from "@/utils";
@@ -6,15 +7,16 @@ import {
   ChevronDownOutline as downIcon,
   LogOutOutline as LogoutIcon,
   Pencil as EditIcon,
-  PersonCircleOutline as UserIcon
+  PersonCircleOutline as UserIcon,
 } from '@vicons/ionicons5'
 
+const router = useRouter()
 const user_options = [
-  {
-    label: '用户资料',
-    key: 'profile',
-    icon: renderIcon(UserIcon)
-  },
+  // {
+  //   label: '用户资料',
+  //   key: 'profile',
+  //   icon: renderIcon(UserIcon)
+  // },
   {
     label: '编辑用户资料',
     key: 'editProfile',
@@ -34,6 +36,17 @@ const admin_options = [
     icon: renderIcon(LogoutIcon)
   }
 ]
+
+let handleSelect = (key: string) => {
+  switch (key) {
+    case 'logout': {
+      sessionStorage.removeItem('authed')
+      router.replace({
+        path: '/login'
+      })
+    }
+  }
+}
 
 const themeStore = useThemeStore()
 const userStore = useUserStore()
@@ -55,8 +68,9 @@ export default {
         ROOT
       </div>
       <div class="r-content">
-        <n-dropdown :options="userStore.thisUser.role==='admin'?admin_options:user_options" width="180px" style="color: white">
+        <n-dropdown @select="handleSelect" :options="userStore.thisUser.role==='admin'?admin_options:user_options" width="180px" style="color: white">
           <n-button :bordered="false" type="primary" style="color: white">
+            <n-icon style="margin-right: 5px" size="18"><UserIcon/></n-icon>
             {{ userStore.thisUser.email }}
             <n-icon style="margin-left: 10px" size="15">
               <downIcon/>
@@ -78,6 +92,8 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+
+
     line-height: 52px;
   }
 
@@ -87,6 +103,9 @@ export default {
 
   .r-content {
     margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
 }

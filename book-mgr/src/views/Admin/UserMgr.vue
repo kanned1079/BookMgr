@@ -78,7 +78,7 @@ const columns = [
     title: '角色',
     key: 'role',
     render(row: User) {
-      return h('p', {}, row.role);
+      return h('p', {}, row.role==='admin'?'管理员':'用户');
     }
   },
   {

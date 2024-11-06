@@ -48,12 +48,12 @@ const themeStore = useThemeStore()
 //   },
 // } as GlobalThemeOverrides
 
-// :theme-overrides="themeStore.bambooGreen.selfOverride
+// :theme-overrides="themeStore.bambooGreen.selfOverride"
 
 </script>
 
 <template>
-  <n-config-provider :theme="darkTheme">
+  <n-config-provider :theme="null" :theme-overrides="themeStore.bambooGreen.selfOverride">
     <n-message-provider>
       <n-notification-provider>
         <n-dialog-provider>

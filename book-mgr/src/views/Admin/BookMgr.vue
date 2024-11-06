@@ -16,10 +16,12 @@ interface Book {
   isbn: string
   price: number
   residue: number
+  cover_url?: string
   created_at?: string
   updated_at?: string
 }
 
+let autoFillInText = ref<string>('')
 let showDrawer = ref<boolean>(false)
 let newBook = ref<Book>({
   name: '',
@@ -30,6 +32,7 @@ let newBook = ref<Book>({
   isbn: '',
   price: 0.00,
   residue: 0,
+  cover_url: '',
 })
 
 let editType = ref<'add' | 'edit'>('add')
@@ -181,14 +184,12 @@ const columns = [
 let editClicked = (row: Book) => {
   editType.value = 'edit'
   editBookId.value = row.id as number
-  newBook.value.name = row.name
-  newBook.value.publisher = row.publisher
-  newBook.value.year = row.year
-  newBook.value.remark = row.remark
-  newBook.value.author = row.author
-  newBook.value.isbn = row.isbn
-  newBook.value.price = row.price
-  newBook.value.residue = row.residue
+
+  Object.keys(newBook.value).forEach(key => {
+    // Cast `key` to `keyof typeof newBook.value` to let TypeScript know `key` is a valid key
+    newBook.value[key as keyof typeof newBook.value] = row[key as keyof typeof row]
+  })
+  // Object.assign(editBookId.value, row)
 
   showDrawer.value = true
 }
@@ -259,6 +260,8 @@ const rules: FormRules = {
 
 const handleCancel = () => {
   console.log("取消表单")
+  clearForm()
+  showDrawer.value = false
 }
 
 const handleAddNewBook = () => {
@@ -290,9 +293,6 @@ let submitNewBook = async () => {
   }
 }
 
-// let alterClick = () => {
-//
-// }
 
 let editBookId = ref<number>(-1)
 let handleUpdateBookInfoById = async () => {
@@ -335,6 +335,18 @@ let deleteBookById = async (row: Book) => {
 }
 
 // -------
+
+let handleQuicklyFillIn = () => {
+  const text = autoFillInText.value;
+  newBook.value.name = text.match(/书名：([^，]+)/)?.[1] || '';
+  newBook.value.publisher = text.match(/出版社：([^，]+)/)?.[1] || '';
+  newBook.value.year = parseInt(text.match(/发行年份：(\d{4})/)?.[1] || '0', 10);
+  newBook.value.author = text.match(/作者：([^，]+)/)?.[1] || '';
+  newBook.value.isbn = text.match(/ISBN：([\dX]+)/)?.[1] || '';
+  newBook.value.price = parseFloat(text.match(/价格：([\d.]+)/)?.[1] || '0');
+  newBook.value.residue = parseInt(text.match(/剩余藏书数量：(\d+)/)?.[1] || '0', 10);
+  newBook.value.remark = text.match(/简述：(.*)/)?.[1] || '';
+};
 
 let clearForm = () => {
   Object.keys(newBook.value).forEach(key => {
@@ -446,8 +458,14 @@ export default {
   >
     <div class="drawer-root">
       <p class="drawer-root-title">{{ editType === 'add' ? '添加新的图书信息' : `修改 ${newBook.name}` }}</p>
+
+      <n-h4>快速输入</n-h4>
+      <n-form-item label="图书信息 （回车确认）">
+        <n-input @keyup.enter="handleQuicklyFillIn" type="textarea" v-model:value="autoFillInText" :rows="6" placeholder="书名：月亮与六便士，出版社：浙江文艺出版社，发行年份：2017，作者：毛姆，ISBN：9787533936020，价格：35.12，剩余藏书数量：17，简述：银行家查尔斯，人到中年，事业有成，为了追求内心隐秘的绘画梦想，突然抛妻别子，弃家出走。他深知：人的每一种身份都是一种自我绑架，唯有失去是通向自由之途。在异国他乡，他贫病交加，对梦想却愈发坚定执着。他说：我必须画画，就像溺水的人必须挣扎。"></n-input>
+      </n-form-item>
+
+      <n-h4>常规输入</n-h4>
       <div class="drawer-root-form">
-        <!--        <template>-->
         <n-form ref="formRef" :model="newBook" :rules="rules">
           <!-- 书名 -->
           <n-form-item path="name" label="书名">
@@ -483,6 +501,10 @@ export default {
             <n-input-number style="width: 100%" v-model:value.number="newBook.residue" placeholder="请输入馆藏数量"/>
           </n-form-item>
 
+          <n-form-item path="cover_url" label="图书封面">
+            <n-input style="width: 100%" v-model:value="newBook.cover_url" placeholder="请输入封面图像链接"/>
+          </n-form-item>
+
           <!-- 简述 -->
           <n-form-item path="remark" label="简述">
             <n-input v-model:value="newBook.remark" type="textarea" placeholder="请输入简述内容"/>
@@ -490,7 +512,7 @@ export default {
 
           <!-- 底部按钮 -->
           <n-space align="center" justify="end" style="margin-top: 20px;">
-            <n-button size="large" type="default" @click="handleCancel">取消</n-button>
+            <n-button size="large" type="primary" tertiary @click="handleCancel">取消</n-button>
             <n-button size="large" v-if="editType==='add'" type="primary" @click="handleAddNewBook">确认添加</n-button>
             <n-button size="large" v-else type="primary" @click="animated=false; handleUpdateBookInfoById()">修改
             </n-button>
@@ -517,7 +539,7 @@ export default {
   }
 
   .drawer-root-form {
-    margin-top: 20px;
+    //margin-top: 20px;
   }
 }
 </style>

@@ -2,6 +2,7 @@ package routers
 
 import (
 	"book-mgr-backend/handler/admin"
+	"book-mgr-backend/handler/univer"
 	"book-mgr-backend/handler/user"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -29,7 +30,7 @@ func (a *App) RunServer() {
 
 	adminGroup := r.Group("/api/admin/v1")
 	{
-		adminGroup.POST("login", admin.HandleAdminLogin)
+		adminGroup.POST("login", univer.HandleUserLogin)
 
 		adminGroup.GET("book", admin.HandleGetAllBooks_Admin)
 		adminGroup.POST("book", admin.HandleAddBook_Admin)
@@ -41,9 +42,12 @@ func (a *App) RunServer() {
 
 	userGroup := r.Group("/api/user/v1")
 	{
-		userGroup.POST("login")
+		userGroup.POST("login", univer.HandleUserLogin)
+		userGroup.POST("register", univer.HandleUserRegister)
 		userGroup.GET("book", user.HandleGetAllBooks_User)
 		userGroup.GET("history", user.HandleGetAllMyBorrowed_User)
+		userGroup.PATCH("history", user.HandleReturnBookById_User)
+		userGroup.POST("borrow", user.HandleBorrowBookById_User)
 	}
 
 	if err := r.Run("localhost:7001"); err != nil {
