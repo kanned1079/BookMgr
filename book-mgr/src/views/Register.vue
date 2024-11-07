@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { onMounted, Ref, ref } from 'vue'
-import { useRouter } from "vue-router";
-import { ChevronForward } from "@vicons/ionicons5"
-import { FormInst, FormRules, useMessage } from 'naive-ui'
+import {onMounted, Ref, ref} from 'vue'
+import {useRouter} from "vue-router";
+import {ChevronForward} from "@vicons/ionicons5"
+import {FormInst, FormRules, useMessage} from 'naive-ui'
 import instance from "@/axios";
-import { encodeToBase64 } from "@/utils/base64";
+import {encodeToBase64} from "@/utils/base64";
 
 let animated = ref<boolean>(false)
 const router = useRouter()
@@ -25,16 +25,16 @@ const form: Ref<RegisterForm> = ref({
 
 const rules: FormRules = {
   email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入有效的邮箱地址', trigger: 'blur' },
+    {required: true, message: '请输入邮箱', trigger: 'blur'},
+    {type: 'email', message: '请输入有效的邮箱地址', trigger: 'blur'},
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度至少6位', trigger: 'blur' },
+    {required: true, message: '请输入密码', trigger: 'blur'},
+    {min: 6, message: '密码长度至少6位', trigger: 'blur'},
   ],
   confirmPassword: [
-    { required: true, message: '请再次输入密码', trigger: 'blur' },
-    { validator: (rule, value) => value === form.value.password, message: '两次密码输入不一致', trigger: 'blur' },
+    {required: true, message: '请再次输入密码', trigger: 'blur'},
+    {validator: (rule, value) => value === form.value.password, message: '两次密码输入不一致', trigger: 'blur'},
   ]
 }
 
@@ -51,13 +51,13 @@ const onSubmit = () => {
 const handleRegisterReq = async () => {
   try {
     form.value.password = encodeToBase64(form.value.password)
-    let { data } = await instance.post('/api/user/v1/register', {
+    let {data} = await instance.post('/api/user/v1/register', {
       email: form.value.email.trim(),
       password: encodeToBase64(form.value.password.trim())
     })
     if (data.code === 200) {
       message.success('注册成功')
-      await router.push({ path: '/login' })
+      await router.push({path: '/login'})
     } else if (data.code === 409) {
       message.error('该邮箱已注册')
     }

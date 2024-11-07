@@ -461,7 +461,8 @@ export default {
 
       <n-h4>快速输入</n-h4>
       <n-form-item label="图书信息 （回车确认）">
-        <n-input @keyup.enter="handleQuicklyFillIn" type="textarea" v-model:value="autoFillInText" :rows="6" placeholder="书名：月亮与六便士，出版社：浙江文艺出版社，发行年份：2017，作者：毛姆，ISBN：9787533936020，价格：35.12，剩余藏书数量：17，简述：银行家查尔斯，人到中年，事业有成，为了追求内心隐秘的绘画梦想，突然抛妻别子，弃家出走。他深知：人的每一种身份都是一种自我绑架，唯有失去是通向自由之途。在异国他乡，他贫病交加，对梦想却愈发坚定执着。他说：我必须画画，就像溺水的人必须挣扎。"></n-input>
+        <n-input @keyup.enter="handleQuicklyFillIn" type="textarea" v-model:value="autoFillInText" :rows="6"
+                 placeholder="书名：月亮与六便士，出版社：浙江文艺出版社，发行年份：2017，作者：毛姆，ISBN：9787533936020，价格：35.12，剩余藏书数量：17，简述：银行家查尔斯，人到中年，事业有成，为了追求内心隐秘的绘画梦想，突然抛妻别子，弃家出走。他深知：人的每一种身份都是一种自我绑架，唯有失去是通向自由之途。在异国他乡，他贫病交加，对梦想却愈发坚定执着。他说：我必须画画，就像溺水的人必须挣扎。"></n-input>
       </n-form-item>
 
       <n-h4>常规输入</n-h4>
