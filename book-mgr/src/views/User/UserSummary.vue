@@ -1,11 +1,43 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
+import {useMessage} from 'naive-ui'
+import {useUserStore} from "@/stores/userinfo";
+import instance from "@/axios";
 
+const userStore = useUserStore()
+const message = useMessage()
 let animated = ref<boolean>(false)
 
+interface UserSummary {
+  unreturned: number
+  borrowed_nums: number
+  ranking_percent: number
+}
 
-onMounted(() => {
+let summary = ref<UserSummary>({
+  unreturned: 0,
+  borrowed_nums: 0,
+  ranking_percent: 0.00,
+})
 
+let getUserSummary = async () => {
+  try {
+    let {data} = await instance.get('/api/user/v1/summary', {
+      params: {
+        user_id: userStore.thisUser.id || -1
+      }
+    })
+    if (data.code === 200) {
+      Object.assign(summary.value, data.summary)
+    }
+  } catch (err: any) {
+    message.error(err + '')
+  }
+}
+
+
+onMounted(async () => {
+  await getUserSummary()
   animated.value = true
 })
 
@@ -30,7 +62,7 @@ export default {
     <div class="root" v-if="animated">
       <n-card hoverable :embedded="true" :bordered="false">
         <n-statistic label="未归还书目数量" tabular-nums>
-          <n-number-animation ref="numberAnimationInstRef" :from="0" :to="4"/>
+          <n-number-animation ref="numberAnimationInstRef" :from="0" :to="summary.unreturned"/>
           <template #suffix>
             本
           </template>
@@ -40,9 +72,9 @@ export default {
       <n-card style="margin-top: 20px;" hoverable :embedded="true" :bordered="false">
         <div style="display: flex; flex-direction: row; justify-content: left; align-items: center;">
           <n-statistic label="总借阅量 / 在所有用户的百分比" tabular-nums>
-            <n-number-animation ref="numberAnimationInstRef" :from="0" :to="229"/>
+            <n-number-animation ref="numberAnimationInstRef" :from="0" :to="summary.borrowed_nums"/>
             本&nbsp;/&nbsp;
-            <n-number-animation ref="numberAnimationInstRef" :from="0" :to="32.20" :precision="2"/>
+            <n-number-animation ref="numberAnimationInstRef" :from="0" :to="summary.ranking_percent.toFixed(2)" :precision="2"/>
             %
           </n-statistic>
         </div>

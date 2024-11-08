@@ -10,58 +10,6 @@ import (
 	"strconv"
 )
 
-//func HandleGetAllBooks_Admin(context *gin.Context) {
-//	// 获取分页参数
-//	err, page, size := handler.GetPage2SizeFormQueryParams(context)
-//	if err != nil {
-//		context.JSON(http.StatusOK, gin.H{
-//			"code": http.StatusInternalServerError,
-//			"msg":  "缺少查询参数",
-//		})
-//		return
-//	}
-//	log.Println("Page:", page, "Size:", size)
-//	//page: dataSize.value.page,	// 已实现
-//	//	size: dataSize.value.pageSize, //已实现
-//
-//	// 下面这三个参数均是通过query获取
-//	//search_by: searchType.value, 按照 name, author, publisher等 这里对应数据库中的列名
-//	//search_content: searchTarget.value,	具体搜索的值
-//	//search_sort: searchSort.value, 回传数据为 'ASC'和'DESC'
-//
-//	// 获取总记录数
-//	var totalBooks int64
-//	if result := dao.Db.Model(&model.Book{}).Count(&totalBooks); result.Error != nil {
-//		context.JSON(http.StatusOK, gin.H{
-//			"code": http.StatusInternalServerError,
-//			"msg":  "查询总记录数出错",
-//		})
-//		return
-//	}
-//
-//	// 计算总页数
-//	pageCount := (totalBooks + int64(size) - 1) / int64(size)
-//
-//	// 查询分页数据
-//	var books []model.Book
-//	offset := (page - 1) * size
-//	if result := dao.Db.Model(&model.Book{}).Offset(int(offset)).Limit(int(size)).Find(&books); result.Error != nil {
-//		context.JSON(http.StatusOK, gin.H{
-//			"code": http.StatusInternalServerError,
-//			"msg":  "查询出错",
-//		})
-//		return
-//	}
-//
-//	// 返回分页数据和总页数
-//	context.JSON(http.StatusOK, gin.H{
-//		"code":        http.StatusOK,
-//		"books":       books,
-//		"page_count":  pageCount,
-//		"total_books": totalBooks,
-//	})
-//}
-
 func HandleGetAllBooks_Admin(context *gin.Context) {
 	// 获取分页参数
 	// 从查询参数中获取页码和页面大小，并检查是否有错误
@@ -135,48 +83,6 @@ func HandleGetAllBooks_Admin(context *gin.Context) {
 		"total_books": totalBooks,
 	})
 }
-
-/*
-interface User {
-  id?: number
-  role: string
-  email: string
-  borrowed_nums: number
-  created_at: string
-  updated_at: string
-}
-
-let users = ref<User[]>([])
-
-let getAllUser = async () => {
-  try {
-    let {data} = await instance.get('/api/admin/v1/user', {
-      page: 1,
-      size: 100,
-      search_email: searchEmail.value.trim(),
-    })
-    if (data.code === 200) {
-      data.users.forEach((user: User) => users.push(user))
-      pageCount.value = data.page_count
-      animated.value = true
-    }
-  } catch (err: any) {
-    message.error(err + '')
-  }
-}
-*/
-
-//func HandleGetAllUsers_Admin(context *gin.Context) {
-//	// 数据格式为
-//	//  id?: number
-//	//  role: string
-//	//  email: string
-//	//  borrowed_nums: number
-//	//  created_at: string
-//	//  updated_at: string
-//	// 其中borrowed_nums需要使用用户id查询history表中UserId对应的行 并且IsBack属性为false 为未归还 如果没有则为 0
-//	// 返回的数据需要对应到上面的ts代码中
-//}
 
 func HandleGetAllUsers_Admin(context *gin.Context) {
 	// 从请求参数中获取分页和筛选条件

@@ -32,6 +32,8 @@ func (a *App) RunServer() {
 	{
 		adminGroup.POST("login", univer.HandleUserLogin)
 
+		adminGroup.GET("summary")
+
 		adminGroup.GET("book", admin.HandleGetAllBooks_Admin)
 		adminGroup.POST("book", admin.HandleAddBook_Admin)
 		adminGroup.PUT("book", admin.HandleUpdateBook_Admin)
@@ -44,6 +46,7 @@ func (a *App) RunServer() {
 	{
 		userGroup.POST("login", univer.HandleUserLogin)
 		userGroup.POST("register", univer.HandleUserRegister)
+		userGroup.GET("summary", user.HandleGetSummary_User)
 		userGroup.GET("book", user.HandleGetAllBooks_User)
 		userGroup.GET("history", user.HandleGetAllMyBorrowed_User)
 		userGroup.PATCH("history", user.HandleReturnBookById_User)

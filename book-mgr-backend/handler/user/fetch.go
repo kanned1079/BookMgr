@@ -13,6 +13,74 @@ import (
 	"time"
 )
 
+func HandleGetSummary_User(context *gin.Context) {
+	id, err := strconv.ParseInt(context.Query("user_id"), 10, 64)
+	if err != nil {
+		context.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	log.Println(id)
+	if id <= 0 {
+		context.JSON(http.StatusOK, gin.H{
+			"code": http.StatusBadRequest,
+			"msg":  "提供的信息无效",
+		})
+		return
+	}
+
+	// 返回的数据
+	responseData := &struct {
+		Unreturned     int64   `json:"unreturned"`
+		BorrowedNums   int64   `json:"borrowed_nums"`
+		RankingPercent float64 `json:"ranking_percent"`
+	}{}
+
+	// 查询未归还书的数量
+	if err := dao.Db.Model(&model.History{}).Where("user_id = ? AND is_back = ?", id, false).Count(&responseData.Unreturned).Error; err != nil {
+		context.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  err.Error(),
+		})
+		return
+	}
+
+	// 查询用户借阅的所有数量
+	if err := dao.Db.Model(&model.History{}).Where("user_id = ?", id).Count(&responseData.BorrowedNums).Error; err != nil {
+		context.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  err.Error(),
+		})
+		return
+	}
+
+	// 查询 History 表中的所有数据量
+	var totalBorrowed int64
+	if err := dao.Db.Model(&model.History{}).Count(&totalBorrowed).Error; err != nil {
+		context.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  err.Error(),
+		})
+		return
+	}
+
+	// 计算借阅排名百分比
+	if totalBorrowed > 0 {
+		responseData.RankingPercent = float64(responseData.BorrowedNums) / float64(totalBorrowed) * 100
+	} else {
+		responseData.RankingPercent = 0
+	}
+
+	// 成功
+	context.JSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
+		"summary": responseData,
+		"msg":     "success",
+	})
+}
+
 func HandleGetAllBooks_User(context *gin.Context) {
 	// 获取分页参数
 	// 从查询参数中获取页码和页面大小，并检查是否有错误
@@ -98,141 +166,6 @@ type BorrowHistoryResponse struct {
 	Name      string `json:"name"`
 	ISBN      string `json:"isbn"`
 }
-
-//func HandleGetAllMyBorrowed_User(c *gin.Context) {
-//	// 从上下文中获取数据库实例
-//	db := dao.Db
-//
-//	// 获取分页和查询参数
-//	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-//	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
-//	name := c.DefaultQuery("name", "")
-//	userId, _ := strconv.Atoi(c.DefaultQuery("user_id", "0")) // 获取user_id
-//
-//	// 如果 user_id 为0，返回错误
-//	if userId == 0 {
-//		c.JSON(http.StatusBadRequest, gin.H{"error": "缺少用户ID"})
-//		return
-//	}
-//
-//	// 计算偏移量
-//	offset := (page - 1) * size
-//
-//	// 查询记录
-//	var histories []model.History
-//	query := db.Where("user_id = ?", userId)
-//	if name != "" {
-//		query = query.Joins("JOIN t_books ON t_books.id = t_history.book_id").
-//			Where("t_books.name LIKE ?", "%"+name+"%")
-//	}
-//	if err := query.Offset(offset).Limit(size).Order("created_at DESC").Find(&histories).Error; err != nil {
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": "查询失败"})
-//		return
-//	}
-//
-//	// 获取书籍信息并构造响应
-//	var response []BorrowHistoryResponse
-//	for _, history := range histories {
-//		var book model.Book
-//		if err := db.First(&book, history.BookId).Error; err != nil {
-//			c.JSON(http.StatusInternalServerError, gin.H{"error": "书籍信息查询失败"})
-//			return
-//		}
-//
-//		// 计算留存时间
-//		keepDuration := time.Since(*history.BorrowedAt)
-//		keep := keepDuration.String()
-//
-//		// 构建响应数据
-//		response = append(response, BorrowHistoryResponse{
-//			Id:        history.Id,
-//			UserId:    history.UserId,
-//			BookId:    history.BookId,
-//			BorrowId:  history.BorrowId,
-//			CreatedAt: history.BorrowedAt.Format("2006-01-02"),
-//			IsBack:    history.IsBack,
-//			Keep:      keep,
-//			Name:      book.Name,
-//			ISBN:      book.ISBN,
-//		})
-//	}
-//
-//	// 查询总记录数用于分页
-//	var totalCount int64
-//	query.Count(&totalCount)
-//
-//	c.JSON(http.StatusOK, gin.H{
-//		"code":       200,
-//		"histories":  response,
-//		"page_count": (totalCount + int64(size) - 1) / int64(size),
-//	})
-//}
-
-//func HandleGetAllMyBorrowed_User(c *gin.Context) {
-//	// 从上下文中获取数据库实例
-//	db := dao.Db
-//
-//	// 获取分页和查询参数
-//	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-//	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
-//	name := c.DefaultQuery("name", "")
-//	userId, _ := strconv.Atoi(c.DefaultQuery("user_id", "0")) // 获取 user_id
-//
-//	// 如果 user_id 为 0，返回错误
-//	if userId == 0 {
-//		c.JSON(http.StatusBadRequest, gin.H{"error": "缺少用户ID"})
-//		return
-//	}
-//
-//	// 计算偏移量
-//	offset := (page - 1) * size
-//
-//	// 查询记录并进行预加载
-//	var histories []model.History
-//	query := db.Preload("Book").Where("user_id = ?", userId)
-//	if name != "" {
-//		query = query.Joins("JOIN t_books ON t_books.id = t_history.book_id").
-//			Where("t_books.name LIKE ?", "%"+name+"%")
-//	}
-//	if err := query.Offset(offset).Limit(size).Order("t_history.created_at DESC").Find(&histories).Error; err != nil {
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": "查询失败"})
-//		return
-//	}
-//
-//	// 构造响应
-//	var response []BorrowHistoryResponse
-//	for _, history := range histories {
-//		book := history.Book // 直接获取预加载的 Book 信息
-//
-//		// 计算留存时间
-//		keepDuration := time.Since(*history.BorrowedAt)
-//		keep := keepDuration.String()
-//
-//		// 构建响应数据
-//		response = append(response, BorrowHistoryResponse{
-//			Id:        history.Id,
-//			UserId:    history.UserId,
-//			BookId:    history.BookId,
-//			BorrowId:  history.BorrowId,
-//			CreatedAt: history.BorrowedAt.Format("2006-01-02"),
-//			IsBack:    history.IsBack,
-//			Keep:      keep,
-//			Name:      book.Name,
-//			ISBN:      book.ISBN,
-//		})
-//	}
-//
-//	// 查询总记录数用于分页
-//	var totalCount int64
-//	query.Count(&totalCount)
-//
-//	// 返回结果
-//	c.JSON(http.StatusOK, gin.H{
-//		"code":       200,
-//		"histories":  response,
-//		"page_count": (totalCount + int64(size) - 1) / int64(size),
-//	})
-//}
 
 func HandleGetAllMyBorrowed_User(c *gin.Context) {
 	// 从上下文中获取数据库实例
@@ -396,33 +329,6 @@ func HandleBorrowBookById_User(context *gin.Context) {
 		"msg":  "成功",
 	})
 }
-
-//func HandleReturnBookById_User(context *gin.Context) {
-//	postData := &struct {
-//		BorrowId string `json:"borrow_id"`
-//		UserId   int64  `json:"user_id"`
-//		BookId   int64  `json:"book_id"`
-//	}{}
-//	if err := context.ShouldBind(postData); err != nil {
-//		context.JSON(http.StatusOK, gin.H{
-//			"code": http.StatusBadRequest,
-//			"msg":  "请求参数错误",
-//		})
-//		return
-//	}
-//	if postData.UserId <= 0 || postData.BookId <= 0 {
-//		context.JSON(http.StatusOK, gin.H{
-//			"code": http.StatusBadRequest,
-//			"msg":  "请求参数错误",
-//		})
-//		return
-//	}
-//	tx := dao.Db.Begin()
-//	// 将 is_back 设置为true
-//	tx.Model(&model.History{}).Where("borrow_id = ?", postData.BorrowId)
-//	// 将residue +1
-//	tx.Model(&model.Book{}).Where("id = ?", postData.BookId).Update("residue")
-//}
 
 func HandleReturnBookById_User(context *gin.Context) {
 	postData := &struct {
