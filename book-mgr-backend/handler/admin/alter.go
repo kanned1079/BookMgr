@@ -19,6 +19,7 @@ func HandleAddBook_Admin(context *gin.Context) {
 		ISBN      string  `json:"isbn"`
 		Price     float64 `json:"price"`
 		Residue   int64   `json:"residue"`
+		CoverUrl  string  `json:"cover_url"`
 	}{}
 	if err := context.ShouldBind(postData); err != nil {
 		log.Println(err.Error())
@@ -38,6 +39,7 @@ func HandleAddBook_Admin(context *gin.Context) {
 		ISBN:      postData.ISBN,
 		Price:     postData.Price,
 		Residue:   postData.Residue,
+		CoverUrl:  postData.CoverUrl,
 	}
 	if err := dao.Db.Model(&model.Book{}).Create(&newBook).Error; err != nil {
 		log.Println(err.Error())
@@ -57,7 +59,7 @@ func HandleAddBook_Admin(context *gin.Context) {
 func HandleUpdateBook_Admin(context *gin.Context) {
 	log.Println("修改图书信息")
 	postData := &struct {
-		Id        int     `json:"id"`
+		BookId    int64   `json:"book_id"`
 		Name      string  `json:"name"`
 		Publisher string  `json:"publisher"`
 		Year      int32   `json:"year"`
@@ -66,14 +68,16 @@ func HandleUpdateBook_Admin(context *gin.Context) {
 		ISBN      string  `json:"isbn"`
 		Price     float64 `json:"price"`
 		Residue   int64   `json:"residue"`
+		CoverUrl  string  `json:"cover_url"`
 	}{}
+	log.Println("查找", postData.BookId)
 	if err := context.ShouldBind(&postData); err != nil {
 		log.Println(err.Error())
 	}
 	log.Println(postData)
 	// 查找并更新数据库中的记录
 	var book model.Book
-	if err := dao.Db.Model(&model.Book{}).Where("id = ?", postData.Id).First(&book).Error; err != nil {
+	if err := dao.Db.Model(&model.Book{}).Where("id = ?", postData.BookId).First(&book).Error; err != nil {
 		context.JSON(http.StatusNotFound, gin.H{
 			"code":    http.StatusNotFound,
 			"msg":     "书籍未找到",
@@ -91,6 +95,7 @@ func HandleUpdateBook_Admin(context *gin.Context) {
 	book.ISBN = postData.ISBN
 	book.Price = postData.Price
 	book.Residue = postData.Residue
+	book.CoverUrl = postData.CoverUrl
 
 	// 保存更改
 	if err := dao.Db.Save(&book).Error; err != nil {

@@ -21,7 +21,6 @@ interface Book {
   created_at?: string
   updated_at?: string
 
-  [key: any]: any
 }
 
 const userStore = useUserStore()
@@ -55,13 +54,13 @@ let dataSize = ref<{ pageSize: number, page: number }>({
   page: 1,
 })
 
-const bookDetails = (book) => [
+const bookDetails = (book: Book) => [
   {label: '作者', value: book.author},
   {label: '出版社', value: book.publisher},
   {label: '发行时间', value: book.year},
   {label: '价格', value: `${book.price.toFixed(2)} CNY`},
   {label: 'ISBN', value: book.isbn},
-  {label: '入库时间', value: formatDate(book.created_at)},
+  {label: '入库时间', value: formatDate(book.created_at as string)},
   {label: '剩余藏书数量', value: book.residue}
 ];
 
@@ -280,7 +279,7 @@ export default {
           </div>
           <div class="book-item">
             <p class="book-item-title">入库时间:</p>
-            <p class="book-item-content">{{ formatDate(bookDetail.created_at) }}</p>
+            <p class="book-item-content">{{ formatDate(bookDetail.created_at as string) }}</p>
           </div>
           <div class="book-item">
             <p class="book-item-title">剩余藏书数量:</p>
@@ -292,7 +291,7 @@ export default {
           </div>
 
           <n-button
-              :disabled="bookDetail.residue===0" @click="borrowBookById(bookDetail.id)"
+              :disabled="bookDetail.residue===0" @click="borrowBookById(bookDetail.id as number)"
               type="primary"
               style="margin-top: 40px; width: 60%; height: 40px"
           >

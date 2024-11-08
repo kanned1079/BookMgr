@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import {onMounted, Ref, ref} from 'vue'
+import {onMounted, type Ref, ref} from 'vue'
 import {useRouter} from "vue-router";
 import {ChevronForward} from "@vicons/ionicons5"
-import {FormInst, FormRules, useMessage} from 'naive-ui'
+import {type FormInst, type FormRules, useMessage} from 'naive-ui'
 import instance from "@/axios";
 import {useUserStore} from "@/stores/userinfo";
 import {encodeToBase64} from "@/utils/base64";
@@ -59,6 +59,7 @@ let handleLoginReq = async () => {
       message.success('登录成功')
       Object.assign(userStore.thisUser, data.user)
       sessionStorage.setItem('authed', JSON.stringify(true))
+      userStore.authed = true
       await router.push({
         path: form.value.role === 'admin' ? '/admin/summary' : '/user/summary'
       })
@@ -75,7 +76,7 @@ let handleLoginReq = async () => {
 }
 
 onMounted(() => {
-  let authed = JSON.parse(sessionStorage.getItem('authed') || false)
+  let authed = JSON.parse(sessionStorage.getItem('authed') || 'false')
   userStore.authed = authed
   if (authed)
     router.push({

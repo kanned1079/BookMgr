@@ -1,9 +1,21 @@
 <script setup lang="ts">
 import useThemeStore from "@/stores/theme";
+import {useUserStore} from "@/stores/userinfo";
+import {useRouter} from "vue-router";
+import theme from "@/stores/theme";
 
 const themeStore = useThemeStore()
+const userStore = useUserStore()
+const router = useRouter()
 
 // console.log(themeStore.bambooGreen.topLogoBgColor)
+
+let backDashBoard = () => {
+  themeStore.menuSelected = userStore.thisUser.role==='admin'?'admin-summary':' user-summary'
+  router.push({
+    path: userStore.thisUser.role==='admin'?'/admin/summary':'/user/summary'
+  })
+}
 
 </script>
 

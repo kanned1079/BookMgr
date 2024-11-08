@@ -32,7 +32,7 @@ func (a *App) RunServer() {
 	{
 		adminGroup.POST("login", univer.HandleUserLogin)
 
-		adminGroup.GET("summary")
+		adminGroup.GET("summary", admin.GetAdminSummary_Admin)
 
 		adminGroup.GET("book", admin.HandleGetAllBooks_Admin)
 		adminGroup.POST("book", admin.HandleAddBook_Admin)

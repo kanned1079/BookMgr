@@ -23,7 +23,7 @@ interface Theme {
     userPath: Ref<string>;
 }
 
-const useThemeStore = defineStore('themeStore', () => {
+const useThemeStore = defineStore('themeStore', (): Theme => {
     // 通用部分
     const globeTheme = {
         asideBgColor: '#ffffff',

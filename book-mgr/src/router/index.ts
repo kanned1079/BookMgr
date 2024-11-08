@@ -65,12 +65,31 @@ const router = createRouter({
 });
 
 // 路由拦截器 不允许用户访问管理员界面
+// router.beforeEach((to, from, next) => {
+//     const userStore = useUserStore();
+//     const userRole = userStore.thisUser.role;
+//     if (to.path.startsWith('/admin') && userRole !== 'admin') { // 去往的路径中以/admin开头但是用户不是管理员
+//         return next('/user/summary');   // 重定向到用户的首页
+//     }
+//
+//     next();
+// });
+
 router.beforeEach((to, from, next) => {
     const userStore = useUserStore();
-    const userRole = userStore.thisUser.role;
-    if (to.path.startsWith('/admin') && userRole !== 'admin') { // 去往的路径中以/admin开头但是用户不是管理员
-        return next('/user/summary');   // 重定向到用户的首页
+
+    // 检查用户是否已认证，如果未认证且当前路由不是 /login 或 /register，重定向到 /login
+    if (!userStore.authed && to.path !== '/login' && to.path !== '/register') {
+        return next({ path: '/login', replace: true }); // 重定向到登录页，不允许返回
     }
+
+    // 如果用户已认证，检查权限
+    const userRole = userStore.thisUser.role;
+    if (to.path.startsWith('/admin') && userRole !== 'admin') {
+        return next({ path: '/user/summary', replace: true }); // 重定向到用户首页，不允许返回
+    }
+
+    // 否则允许继续导航
     next();
 });
 

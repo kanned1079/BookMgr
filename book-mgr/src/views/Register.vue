@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import {onMounted, Ref, ref} from 'vue'
+import {onMounted, type Ref, ref} from 'vue'
 import {useRouter} from "vue-router";
 import {ChevronForward} from "@vicons/ionicons5"
-import {FormInst, FormRules, useMessage} from 'naive-ui'
+import {type FormInst, type FormRules, useMessage} from 'naive-ui'
 import instance from "@/axios";
 import {encodeToBase64} from "@/utils/base64";
 

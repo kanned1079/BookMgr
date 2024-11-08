@@ -40,7 +40,8 @@ const admin_options = [
 let handleSelect = (key: string) => {
   switch (key) {
     case 'logout': {
-      sessionStorage.removeItem('authed')
+      // sessionStorage.removeItem('authed')
+      sessionStorage.setItem('authed', JSON.stringify(false))
       router.replace({
         path: '/login'
       })
@@ -65,7 +66,7 @@ export default {
   <div class="root" :style="{backgroundColor: themeStore.bambooGreen.topHeaderBgColor}">
     <div class="root-inner">
       <div class="l-content">
-        ROOT
+        {{ userStore.thisUser.role==='admin'?'管理员':'用户' }}
       </div>
       <div class="r-content">
         <n-dropdown @select="handleSelect" :options="userStore.thisUser.role==='admin'?admin_options:user_options" width="180px" style="color: white">

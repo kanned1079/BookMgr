@@ -10,6 +10,48 @@ import (
 	"strconv"
 )
 
+func GetAdminSummary_Admin(context *gin.Context) {
+	responseData := &struct {
+		UserCount     int64 `json:"user_count"`
+		BookCount     int64 `json:"book_count"`
+		BorrowedCount int64 `json:"borrowed_count"`
+	}{}
+
+	// 查询总藏书量
+	if err := dao.Db.Model(&model.Book{}).Count(&responseData.BookCount).Error; err != nil {
+		context.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  err.Error(),
+		})
+		return
+	}
+
+	// 查询总用户数量
+	if err := dao.Db.Model(&model.User{}).Count(&responseData.UserCount).Error; err != nil {
+		context.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  err.Error(),
+		})
+		return
+	}
+
+	// 查询总借阅量
+	if err := dao.Db.Model(&model.History{}).Count(&responseData.BorrowedCount).Error; err != nil {
+		context.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  err.Error(),
+		})
+		return
+	}
+
+	// 成功
+	context.JSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
+		"summary": responseData,
+		"msg":     "success",
+	})
+}
+
 func HandleGetAllBooks_Admin(context *gin.Context) {
 	// 获取分页参数
 	// 从查询参数中获取页码和页面大小，并检查是否有错误

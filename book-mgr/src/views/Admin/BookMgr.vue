@@ -185,11 +185,11 @@ let editClicked = (row: Book) => {
   editType.value = 'edit'
   editBookId.value = row.id as number
 
-  Object.keys(newBook.value).forEach(key => {
-    // Cast `key` to `keyof typeof newBook.value` to let TypeScript know `key` is a valid key
-    newBook.value[key as keyof typeof newBook.value] = row[key as keyof typeof row]
-  })
-  // Object.assign(editBookId.value, row)
+  // Object.keys(newBook.value).forEach((key) => {
+  //   const typedKey = key as keyof Book;  // 先将 key 断言为 Book 类型的键
+  //   newBook.value[typedKey] = row[typedKey] ?? ''; // 确保赋值兼容
+  // });
+  Object.assign(newBook.value, row)
 
   showDrawer.value = true
 }
@@ -299,7 +299,7 @@ let handleUpdateBookInfoById = async () => {
   try {
     animated.value = false
     let {data} = await instance.put('/api/admin/v1/book', {
-      id: editBookId.value,
+      book_id: editBookId.value,
       ...newBook.value
     })
     if (data.code === 200) {
@@ -349,14 +349,30 @@ let handleQuicklyFillIn = () => {
 };
 
 let clearForm = () => {
-  Object.keys(newBook.value).forEach(key => {
-    if (typeof newBook.value[key] === 'string') {
-      newBook.value[key] = '';
-    } else if (typeof newBook.value[key] === 'number') {
-      newBook.value[key] = 0;
-    }
-  });
-};
+  // Object.keys(newBook.value).forEach((key) => {
+  //   const typedKey = key as keyof Book;
+  //
+  //   // 如果是字符串类型属性，清空字符
+  //   if (typeof newBook.value[typedKey] === 'string') {
+  //     newBook.value[typedKey] = '' as Book[keyof Book];
+  //   }
+  //   // 如果是数字类型属性，赋值为 0
+  //   else if (typeof newBook.value[typedKey] === 'number') {
+  //     newBook.value[typedKey] = 0 as Book[keyof Book];
+  //   }
+  // });
+  newBook.value.id = 0
+  newBook.value.name = ''
+  newBook.value.author = ''
+  newBook.value.year = 0
+  newBook.value.residue = 0
+  newBook.value.cover_url = ''
+  newBook.value.publisher = ''
+  newBook.value.price = 0
+  newBook.value.isbn = ''
+  newBook.value.remark = ''
+
+}
 
 onMounted(async () => {
   // message.info('BookMgr mounted.')

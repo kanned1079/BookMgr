@@ -74,7 +74,7 @@ export default {
           <n-statistic label="总借阅量 / 在所有用户的百分比" tabular-nums>
             <n-number-animation ref="numberAnimationInstRef" :from="0" :to="summary.borrowed_nums"/>
             本&nbsp;/&nbsp;
-            <n-number-animation ref="numberAnimationInstRef" :from="0" :to="summary.ranking_percent.toFixed(2)" :precision="2"/>
+            <n-number-animation ref="numberAnimationInstRef" :from="0" :to="summary.ranking_percent" :precision="2"/>
             %
           </n-statistic>
         </div>

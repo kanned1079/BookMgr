@@ -3,7 +3,8 @@ import axios from 'axios';
 
 // axios 实例
 const instance = axios.create( {
-    baseURL: 'http://localhost:7001',
+    baseURL: 'https://ikanned.com:27001',
+    // baseURL: 'http://localhost:7001',
     // baseURL: 'http://gateway.orb.local:8081',
     timeout: 10000 // 设置超时时间
 });

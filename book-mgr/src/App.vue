@@ -1,54 +1,17 @@
 <script setup lang="ts">
+import {onMounted} from "vue";
 import {RouterView} from 'vue-router'
 import useThemeStore from "@/stores/theme";
+import {useUserStore} from "@/stores/userinfo";
 import {type GlobalThemeOverrides, darkTheme} from 'naive-ui'
 import theme from "@/stores/theme";
 const themeStore = useThemeStore()
+const userStore = useUserStore()
 
-// let override = {
-//   common: {
-//     primaryColor: '#5dac81',
-//     primaryColorPressed: '#5dac81',
-//     bodyColor: '#eff2f7',
-//     modalColor: '#eff2f7',
-//     tableColor: '#eff2f7',
-//   },
-//   Button: {
-//     color: '#5dac81',
-//     colorFocusPrimary: '#4ca879',
-//     colorHoverPrimary: '#4ca879',
-//     colorPressedPrimary: '#4ca879',
-//     textColorPrimary: '#ffffff',
-//     textColorHoverPrimary: '#ffffff',
-//     textColorPressedPrimary: '#ffffff',
-//     textColorFocusPrimary: '#ffffff',
-//     colorTextPrimary: '#5dac81',
-//     colorTextHoverPrimary: '#4ca879',
-//     textColorPrimaryDisabled: '#ffffff',
-//   },
-//   Input: {
-//     borderHover: '1px solid #5dac81',
-//     borderFocus: '1px solid #5dac81',
-//   },
-//   Card: {
-//     colorEmbedded: '#ffffff',
-//   },
-//   Switch: {
-//     railColorActive: '#5dac81',
-//   },
-//   DataTable: {
-//     borderRadius: '3px',
-//   },
-//   Notification: {
-//     color: '#fff',
-//     bordered: '1px solid #5dac81',
-//   },
-//   Dropdown: {
-//     color: '#353535',
-//   },
-// } as GlobalThemeOverrides
-
-// :theme-overrides="themeStore.bambooGreen.selfOverride"
+// onMounted(() => {
+//   // console.log(JSON.parse(sessionStorage.getItem('auth') || false))
+//   // userStore.authed = JSON.parse(sessionStorage.getItem('auth') || false)
+// })
 
 </script>
 

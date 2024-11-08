@@ -40,14 +40,14 @@ let MenuOptionUser = [
     icon: renderIcon(BarChartOutline)
   },
   {
-    label: '我借的书',
-    key: 'my-books',
+    label: '借书',
+    key: 'bring-books',
     icon: renderIcon(BookOutline)
   },
   {
-    label: '借书',
-    key: 'bring-books',
-    icon: renderIcon(PeopleOutline)
+    label: '我借的书',
+    key: 'my-books',
+    icon: renderIcon(MenuOutline)
   },
 ]
 
@@ -112,7 +112,6 @@ export default {
 .root {
   display: flex;
   flex-direction: column;
-  //background-color: #e3e5e7 ;
   .logo {
   }
   .menu {
@@ -120,7 +119,6 @@ export default {
   }
   .root-inner {
     height: calc(100vh - 52px);
-    //background-color: white;
   }
 }
 </style>
