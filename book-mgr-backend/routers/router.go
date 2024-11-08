@@ -40,6 +40,8 @@ func (a *App) RunServer() {
 		adminGroup.DELETE("book", admin.HandleDeleteBook_Admin)
 
 		adminGroup.GET("user", admin.HandleGetAllUsers_Admin)
+
+		adminGroup.GET("history", admin.GetAllHistories_Admin)
 	}
 
 	userGroup := r.Group("/api/user/v1")

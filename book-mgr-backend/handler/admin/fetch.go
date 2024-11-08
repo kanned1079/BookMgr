@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func GetAdminSummary_Admin(context *gin.Context) {
@@ -198,5 +199,99 @@ func HandleGetAllUsers_Admin(context *gin.Context) {
 		"code":       200,
 		"users":      responseUsers,
 		"page_count": (totalUsers + int64(sizeInt) - 1) / int64(sizeInt), // 计算页数
+	})
+}
+
+type BorrowHistory struct {
+	Id        int64  `json:"id"`
+	BorrowId  string `json:"borrow_id"`
+	Email     string `json:"email"`
+	BookName  string `json:"book_name"`
+	BookISBN  string `json:"book_isbn"`
+	CreatedAt string `json:"created_at"`
+	IsBack    bool   `json:"is_back"`
+}
+
+func GetAllHistories_Admin(context *gin.Context) {
+	// 获取分页和搜索条件
+	page, _ := strconv.Atoi(context.DefaultQuery("page", "1"))
+	size, _ := strconv.Atoi(context.DefaultQuery("size", "10"))
+	searchType := context.DefaultQuery("search_type", "")
+	searchTarget := context.DefaultQuery("search_target", "")
+
+	var results []struct {
+		Id        int64     `json:"id"`
+		BorrowId  string    `json:"borrow_id"`
+		Email     string    `json:"email"`
+		BookName  string    `json:"book_name"`
+		BookISBN  string    `json:"book_isbn"`
+		CreatedAt time.Time `json:"created_at"`
+		IsBack    bool      `json:"is_back"`
+	}
+
+	// 初始化查询，关联用户和书籍表
+	query := dao.Db.Table("t_history").
+		Select("t_history.id, t_history.borrow_id, t_user.email, t_books.name AS book_name, t_books.isbn AS book_isbn, t_history.created_at, t_history.is_back").
+		Joins("JOIN t_user ON t_user.id = t_history.user_id").
+		Joins("JOIN t_books ON t_books.id = t_history.book_id")
+
+	// 根据 searchType 和 searchTarget 添加查询条件
+	if searchTarget != "" {
+		switch searchType {
+		case "email":
+			query = query.Where("t_user.email LIKE ?", "%"+searchTarget+"%")
+		case "name":
+			query = query.Where("t_books.name LIKE ?", "%"+searchTarget+"%")
+		case "isbn":
+			query = query.Where("t_books.isbn LIKE ?", "%"+searchTarget+"%")
+		}
+	}
+
+	// 计算总记录数
+	var totalRecords int64
+	if err := query.Count(&totalRecords).Error; err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  "Failed to count histories",
+		})
+		return
+	}
+
+	// 计算 page_count
+	pageCount := (totalRecords + int64(size) - 1) / int64(size)
+
+	// 执行分页和排序
+	offset := (page - 1) * size
+	query = query.Order("t_history.created_at DESC").Offset(offset).Limit(size)
+
+	// 获取分页数据
+	if err := query.Scan(&results).Error; err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  "Failed to retrieve histories",
+		})
+		return
+	}
+
+	// 转换查询结果为前端需要的格式
+	var borrowHistories []BorrowHistory
+	for _, result := range results {
+		borrowHistories = append(borrowHistories, BorrowHistory{
+			Id:        result.Id,
+			BorrowId:  result.BorrowId,
+			Email:     result.Email,
+			BookName:  result.BookName,
+			BookISBN:  result.BookISBN,
+			CreatedAt: result.CreatedAt.Format("2006-01-02 15:04:05"),
+			IsBack:    result.IsBack,
+		})
+	}
+
+	// 返回查询结果和总页数
+	context.JSON(http.StatusOK, gin.H{
+		"code":       http.StatusOK,
+		"histories":  borrowHistories,
+		"msg":        "success",
+		"page_count": pageCount,
 	})
 }

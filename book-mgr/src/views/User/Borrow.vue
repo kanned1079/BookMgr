@@ -6,6 +6,8 @@ import {NButton, NInput, useMessage} from "naive-ui";
 import {ChevronForward, CheckmarkDone, CloseOutline} from '@vicons/ionicons5'
 import {useUserStore} from "@/stores/userinfo";
 import {formatDate} from "@/utils/timeFormat";
+import useThemeStore from "@/stores/theme";
+import theme from "@/stores/theme";
 
 interface Book {
   id?: number
@@ -20,9 +22,9 @@ interface Book {
   cover_url?: string
   created_at?: string
   updated_at?: string
-
 }
 
+const themeStore = useThemeStore()
 const userStore = useUserStore()
 const router = useRouter()
 let animated = ref<boolean>(false)
@@ -151,6 +153,7 @@ let borrowBookById = async (bookId: number) => {
       book_id: bookId,
     })
     if (data.code === 200) {
+      themeStore.menuSelected = 'my-books'
       await router.push({path: '/user/borrowed'})
       message.success('成功')
     } else if (data.code === 422) {

@@ -8,9 +8,10 @@ import {
   MenuOutline,
   BarChartOutline,
   BookOutline,
-  PeopleOutline
+  PeopleOutline,
+  ClipboardOutline
 } from '@vicons/ionicons5'
-import theme from "@/stores/theme";
+
 const themeStore = useThemeStore()
 const userStore = useUserStore()
 const router = useRouter()
@@ -30,6 +31,11 @@ let MenuOption = [
     label: '用户管理',
     key: 'user-mgr',
     icon: renderIcon(PeopleOutline)
+  },
+  {
+    label: '借阅历史',
+    key: 'borrow-log',
+    icon: renderIcon(ClipboardOutline)
   },
 ]
 
@@ -66,6 +72,10 @@ let adminUpdate = (value: string) => {
     }
     case 'user-mgr': {
       router.push({path: '/admin/user'})
+      break
+    }
+    case 'borrow-log': {
+      router.push({path: '/admin/log'})
       break
     }
     // user

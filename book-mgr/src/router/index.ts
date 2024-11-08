@@ -8,6 +8,8 @@ import Borrow from "@/views/User/Borrow.vue";
 import MyBorrowed from "@/views/User/MyBorrowed.vue";
 import Login from "@/views/Login.vue"
 import Register from "@/views/Register.vue"
+import BorrowHistory from "@/views/Admin/BorrowHistory.vue";
+
 import {useUserStore} from "@/stores/userinfo";
 
 const router = createRouter({
@@ -40,6 +42,10 @@ const router = createRouter({
                 {
                     path: 'user',
                     component: UserMgr
+                },
+                {
+                    path: 'log',
+                    component: BorrowHistory
                 },
             ]
         },

@@ -144,6 +144,7 @@ export default {
     <div class="root" v-if="animated">
       <n-card :embedded="true" hoverable :bordered="false" content-style="padding: 0px" style="margin-top: 20px">
         <n-data-table
+            striped
             class="table"
             :columns="columns"
             :data="users"

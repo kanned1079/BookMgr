@@ -6,7 +6,10 @@ import {type FormInst, type FormRules, useMessage} from 'naive-ui'
 import instance from "@/axios";
 import {useUserStore} from "@/stores/userinfo";
 import {encodeToBase64} from "@/utils/base64";
+import useThemeStore from "@/stores/theme";
+import theme from "@/stores/theme";
 
+const themeStore = useThemeStore()
 const userStore = useUserStore()
 const router = useRouter()
 let animated = ref<boolean>(false)
@@ -60,6 +63,7 @@ let handleLoginReq = async () => {
       Object.assign(userStore.thisUser, data.user)
       sessionStorage.setItem('authed', JSON.stringify(true))
       userStore.authed = true
+      themeStore.menuSelected = form.value.role === 'admin' ? 'admin-summary' : 'user-summary'
       await router.push({
         path: form.value.role === 'admin' ? '/admin/summary' : '/user/summary'
       })
