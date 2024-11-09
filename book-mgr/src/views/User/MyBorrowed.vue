@@ -152,6 +152,7 @@ const columns = [
         h(NButton, {
           size: 'small',
           type: 'primary',
+          secondary: true,
           bordered: false,
           disabled: row.is_back,
           style: {marginLeft: '0px', width: '60px'},

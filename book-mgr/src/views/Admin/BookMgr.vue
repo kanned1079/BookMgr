@@ -166,6 +166,7 @@ const columns = [
         h(NButton, {
           size: 'small',
           type: 'primary',
+          secondary: true,
           bordered: false,
           style: {marginLeft: '10px'},
           onClick: () => editClicked(row),
@@ -173,6 +174,7 @@ const columns = [
         h(NButton, {
           size: 'small',
           type: 'error',
+          secondary: true,
           style: {marginLeft: '10px'},
           onClick: () => deleteBookById(row),
         }, {default: () => '删除'})

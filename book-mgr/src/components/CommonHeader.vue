@@ -2,6 +2,7 @@
 import {useRouter} from "vue-router";
 import useThemeStore from "@/stores/theme";
 import {useUserStore} from "@/stores/userinfo";
+import {useMessage} from "naive-ui";
 import renderIcon from "@/utils";
 import {
   ChevronDownOutline as downIcon,
@@ -10,6 +11,7 @@ import {
   PersonCircleOutline as UserIcon,
 } from '@vicons/ionicons5'
 
+const message = useMessage()
 const router = useRouter()
 const user_options = [
   // {
@@ -45,6 +47,11 @@ let handleSelect = (key: string) => {
       router.replace({
         path: '/login'
       })
+      break
+    }
+    case 'editProfile': {
+      message.info('功能正在开发别急')
+      break
     }
   }
 }
