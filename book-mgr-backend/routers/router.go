@@ -9,8 +9,7 @@ import (
 	"net/http"
 )
 
-type App struct {
-}
+type App struct{}
 
 func (a *App) RunServer() {
 	r := gin.Default()
