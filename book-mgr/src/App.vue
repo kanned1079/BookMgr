@@ -25,7 +25,6 @@ const userStore = useUserStore()
       </n-notification-provider>
     </n-message-provider>
   </n-config-provider>
-
 </template>
 
 <style lang="less">

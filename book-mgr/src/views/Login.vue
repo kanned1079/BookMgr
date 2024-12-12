@@ -39,8 +39,7 @@ const rules: FormRules = {
   ],
 }
 
-
-const onSubmit = () => {
+let onSubmit = () => {
   formRef.value?.validate((errors) => {
     if (!errors) {
       handleLoginReq()

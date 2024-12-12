@@ -158,12 +158,6 @@ const columns = [
           style: {marginLeft: '0px', width: '60px'},
           onClick: () => returnBookById(row),
         }, {default: () => row.is_back?'已还':'还书'}),
-        // h(NButton, {
-        //   size: 'small',
-        //   type: 'error',
-        //   style: {marginLeft: '10px'},
-        //   onClick: () => deleteBookById(row),
-        // }, {default: () => '删除'})
       ]);
     }
   }

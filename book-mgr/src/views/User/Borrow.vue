@@ -124,7 +124,6 @@ let getAllBooks = async () => {
       }
     })
     if (data.code === 200) {
-      // bookList.value = []
       data.books.forEach((book: Book) => bookList.value.push(book))
       animated.value = true
       pageCount.value = data.page_count as number || 0
@@ -134,7 +133,6 @@ let getAllBooks = async () => {
       if (bookList.value.length === 0) {
         message.warning('找不到符合条件的书目')
       } else {
-        // message.success('获取成功')
         console.log('获取成功')
       }
     } else {
